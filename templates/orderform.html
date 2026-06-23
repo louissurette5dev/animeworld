@@ -1,0 +1,140 @@
+<html>
+
+<head>
+
+    <style>
+        img.responsive { 
+            max-width:100%;
+            max-height:150px;
+            display: block;
+            margin: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+<form action="http://127.0.0.1:5055/order/insert" method="post" id="placeOrderForm" name="placeOrderForm" />
+
+<fieldset>
+
+    <legend>Shipping Address</legend>
+
+<table>
+    <tr>
+        <td>Name</td>
+        <td><input type="text" id="customerName" name="customerName"/> </td>
+    </tr>
+    <tr>
+        <td>Shipping address</td>
+        <td><input type="text" id="shippingAddress" name="shippingAddress"/></td>
+    </tr>
+    <tr>
+        <td>City</td>
+        <td><input type="text" id="city" name="city" /></td> 
+    </tr>
+    <tr>
+        <td>Country</td>
+        <td><input type="text" id="country" name="country" /></td>
+    </tr>
+    <tr>
+        <td>Region</td>
+            <!--
+            <input type="text" id="region" name="region" />
+            -->
+         <td> 
+            <select id="region" name="region" >
+                <option value="1">North America</option>
+                <option value="2">Central America</option>
+                <option value="3">Asia</option>
+                <option value="4">European Union</option>
+            </select>
+            
+        </td>
+    </tr>
+    
+    
+
+</table>
+
+</fieldset>
+
+<fieldset>
+    <legend>Product Ordered</legend>
+    <table>
+        <tr>
+            <!--
+            <td><input type="radio" name="productOrdered" value="1" /> Anime Package</td>
+            <td><input type="radio" name="productOrdered" value="2" /> Comic Book Package</td>
+            <td><input type="radio" name="productOrdered" value="3" /> Anniversary Comic Book</td>
+            <td><input type="radio" name="productOrdered" value="4" /> Deluxe Package</td>
+            -->
+            
+            {% for i in range(0,productLength) %}
+            <td><input type="radio" name="productOrdered" value="{{productsByID[i]}}" /> {{productsByName[i]}}
+            <br />
+            <img src="/static/img/{{productsByImage[i]}}" class="responsive" />  
+            <br />
+            ${{productByPrice[i]}}
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+</fieldset>
+
+<input type="submit" value="Plcace order" id="btnSubmit" name="btnSubmit" />
+
+<div name="result" id="result">Order Status</div>
+
+</form>
+
+
+<script src="https://code.jquery.com/jquery-4.0.0.min.js" >  </script>
+
+<script>
+    $( document ).ready(function() {
+
+
+
+        console.log( 'web page loaded' );
+        //action="http://127.0.0.1:5050/order/new"
+        
+        $('#btnSubmit').click( function(event) {
+            event.preventDefault();  // Do not fubmit form.  We will submit it using the code below.
+            
+            var form = $('#placeOrderForm')[0];
+            var data = new FormData(form);
+
+            console.log(data);
+            
+            $.ajax({
+                type: 'POST',
+                encype: 'multipart/form-data',
+                url: 'http://127.0.0.1:5055/order/insert',
+                data: data, 
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 800000,
+                success: function(data) {
+                    console.log( 'success from middleware' );
+                    //$('#result').text( 'Order has been place' );  // This is how we achieve a single web page app
+                    $('#result').text( data );  // This is how we achieve a single web page app
+                    //console.log( data );
+                },
+                error: function(err) {
+                    console.log( 'error in middleware' );
+                    //$('#result').text( 'Something is not right' );
+                    $('#result').text( err );
+                }
+
+            });
+        });
+        
+    });
+
+</script>
+</body>
+</html>
